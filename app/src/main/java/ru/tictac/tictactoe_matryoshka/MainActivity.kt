@@ -18,7 +18,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,27 +35,39 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Oblects()
-                }
-            }
         }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
-private fun Oblects(){
+private fun Oblects() {
     val buttonsBoard = mutableListOf(
-        BoardModel(1,  "", "" ,""),
-        BoardModel(2,  "" ,"", ""),
-        BoardModel(3,  "" ,"", ""),
-        BoardModel(4,  "" ,"", ""),
-        BoardModel(5,  "" ,"", ""),
-        BoardModel(6,  "" ,"", ""),
-        BoardModel(7,  "" ,"", ""),
-        BoardModel(8,  "" ,"", ""),
-        BoardModel(9,  "" ,"", ""))
-    val pl1Buttons = mutableListOf(Pl1(), Pl1(), Pl1())
-    val pl2Buttons = mutableListOf(Pl2(), Pl2(), Pl2())
-    Column (
+        BoardModel("1"),
+        BoardModel("2"),
+        BoardModel("3"),
+        BoardModel("4"),
+        BoardModel("5"),
+        BoardModel("6"),
+        BoardModel("7"),
+        BoardModel("8"),
+        BoardModel("9")
+    )
+    val pl1Buttons = mutableListOf(
+        Pl1("3R", remember { mutableIntStateOf(110) }),
+        Pl1("2R", remember { mutableIntStateOf(90) }),
+        Pl1("1R", remember { mutableIntStateOf(70) })
+    )
+    val pl2Buttons = mutableListOf(
+        Pl2("1B", remember { mutableIntStateOf(70) }),
+        Pl2("2B", remember { mutableIntStateOf(90) }),
+        Pl2("3B", remember { mutableIntStateOf(110) })
+    )
+    val setValue = SetValue()
+    Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween){
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,7 +78,7 @@ private fun Oblects(){
 
         ) {
             repeat(3) { index ->
-                Draw_Pl2(pl2Buttons[index], 70 + index * 2 * 10)
+                Draw_Pl2(pl2Buttons[index], setValue)
             }
         }
         LazyVerticalGrid(
@@ -77,7 +91,7 @@ private fun Oblects(){
             verticalArrangement = Arrangement.spacedBy(8.dp) // Отступы между рядами
         ) {
             items(buttonsBoard.size) { index ->
-                DrawBoard(buttonsBoard[index])
+                DrawBoard(buttonsBoard[index], setValue)
             }
         }
         Row(
@@ -92,7 +106,8 @@ private fun Oblects(){
 
         ) {
             repeat(3) { index ->
-                Draw_Pl1(pl1Buttons[index], 110 - index * 2 * 10)
+                Draw_Pl1(pl1Buttons[index], setValue)
             }
         }
-}}
+    }
+}

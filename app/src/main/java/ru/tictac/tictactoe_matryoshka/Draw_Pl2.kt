@@ -20,22 +20,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Draw_Pl2(item: Pl2, size: Int){
+fun Draw_Pl2(item: Pl2, click: SetValue) {
     Button(
-        onClick = {if (item.count.value != 0){item.count.value -= 1}},
+        onClick = {
+            clickPlayerButton(item, click)
+        },
         modifier = Modifier
             .padding(vertical = 15.dp)
-            .size(size.dp)
+            .size(item.size.value.dp)
             .clip(CircleShape),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Red,      // Цвет фона кнопки
+            containerColor = item.color.value,      // Цвет фона кнопки
             contentColor = Color.DarkGray,        // Цвет текста/иконок
             disabledContainerColor = Color.Gray, // Цвет когда кнопка неактивна
             disabledContentColor = Color.DarkGray
         ),
+        enabled = item.enabled.value
     ) {
-        Text(text ="${item.count.value}",
+        Text(
+            text = "${item.count.value}",
             fontSize = 45.sp,
-            modifier = Modifier.rotate(180f))
+            modifier = Modifier.rotate(180f)
+        )
     }
 }

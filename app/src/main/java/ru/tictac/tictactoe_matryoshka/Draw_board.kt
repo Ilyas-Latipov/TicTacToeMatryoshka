@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DrawBoard(item: BoardModel){
+fun DrawBoard(item: BoardModel, click: SetValue) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,19 +30,22 @@ fun DrawBoard(item: BoardModel){
             .background(Color.White),  // Контейнер всегда квадратный
         contentAlignment = Alignment.Center
     ) {
-    Button(
-        onClick = {
-            item.sizeButton.value += 0.3f},
-        modifier = Modifier
-            .fillMaxSize(item.sizeButton.value)
-            .clip(CircleShape),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = item.color.value,      // Цвет фона кнопки
-            contentColor = Color.Black,        // Цвет текста/иконок
-            disabledContainerColor = Color.Gray, // Цвет когда кнопка неактивна
-            disabledContentColor = Color.DarkGray
-    ),
-    ) {
-        Text(text = "Кнопка ${item.id}")
+        Button(
+            onClick = {
+                if (click.selected){clickBoardButtonSet(item, click)}
+                else {clickBoardButtonRearrange(item, click)}
+            },
+            modifier = Modifier
+                .fillMaxSize(item.sizeNow.value)
+                .clip(CircleShape),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = item.colorNow.value,      // Цвет фона кнопки
+                contentColor = Color.Black,        // Цвет текста/иконок
+                disabledContainerColor = Color.Gray, // Цвет когда кнопка неактивна
+                disabledContentColor = Color.DarkGray
+            ),
+        ) {
+            Text(text = "Кнопка ${item.id}")
+        }
     }
-}}
+}
