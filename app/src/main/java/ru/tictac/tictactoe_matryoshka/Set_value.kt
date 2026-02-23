@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 
 data class SetValue(
     var id: String = "",
+    var oldBoardId: String = "",
     var whoWalk: Boolean = true, // true -> Red | false -> Blue
     var selected: Boolean = false,
     var color: MutableState<Color> = mutableStateOf(Color.Unspecified),

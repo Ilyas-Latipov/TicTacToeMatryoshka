@@ -1,10 +1,5 @@
 package ru.tictac.tictactoe_matryoshka
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -20,20 +15,46 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Draw_Pl2(item: Pl2, click: SetValue) {
+fun Draw_Pl1(item: Pl1, click: SetValue, buttons: List<Players>) {
     Button(
         onClick = {
-            clickPlayerButton(item, click)
+            clickPlayerButton(item, click, buttons)
         },
         modifier = Modifier
             .padding(vertical = 15.dp)
             .size(item.size.value.dp)
             .clip(CircleShape),
         colors = ButtonDefaults.buttonColors(
-            containerColor = item.color.value,      // Цвет фона кнопки
-            contentColor = Color.DarkGray,        // Цвет текста/иконок
-            disabledContainerColor = Color.Gray, // Цвет когда кнопка неактивна
-            disabledContentColor = Color.DarkGray
+            containerColor = item.color.value,
+            contentColor = Color.White,
+            disabledContainerColor = item.color.value,
+            disabledContentColor = Color.White
+        ),
+        enabled = item.enabled.value
+    ) {
+        Text(
+            text = "${item.count.value}",
+            fontSize = 45.sp
+        )
+    }
+}
+
+
+@Composable
+fun Draw_Pl2(item: Pl2, click: SetValue, buttons: List<Players>) {
+    Button(
+        onClick = {
+            clickPlayerButton(item, click, buttons)
+        },
+        modifier = Modifier
+            .padding(vertical = 15.dp)
+            .size(item.size.value.dp)
+            .clip(CircleShape),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = item.color.value,
+            contentColor = Color.White,
+            disabledContainerColor = item.color.value,
+            disabledContentColor = Color.White
         ),
         enabled = item.enabled.value
     ) {
