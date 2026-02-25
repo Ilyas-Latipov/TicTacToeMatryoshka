@@ -1,7 +1,6 @@
 package ru.tictac.tictactoe_matryoshka
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,17 +12,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,74 +69,89 @@ class MainActivity : ComponentActivity() {
 @Preview(showSystemUi = true)
 @Composable
 private fun Oblects() {
+    val theme = Theme()
     val buttonsBoard = remember {
         mutableListOf(
-            BoardModel("1", "1245"),
-            BoardModel("2", "123456"),
-            BoardModel("3", "2356"),
-            BoardModel("4", "124578"),
-            BoardModel("5", "123456789"),
-            BoardModel("6", "235689"),
-            BoardModel("7", "4578"),
-            BoardModel("8", "456789"),
-            BoardModel("9", "5689")
+            BoardModel("1", "1245", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("2", "123456", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("3", "2356", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("4", "124578", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("5", "123456789", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("6", "235689", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("7", "4578", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("8", "456789", mutableStateOf(theme.themeBackNow.value)),
+            BoardModel("9", "5689", mutableStateOf(theme.themeBackNow.value))
         )
     }
     val pl1Buttons = remember {
         mutableListOf(
-            Pl1("3R", mutableIntStateOf(110)),
-            Pl1("2R", mutableIntStateOf(90)),
-            Pl1("1R", mutableIntStateOf(70))
+            Pl1("3R", mutableIntStateOf(105)),
+            Pl1("2R", mutableIntStateOf(85)),
+            Pl1("1R", mutableIntStateOf(65))
         )
     }
     val pl2Buttons = remember {
         mutableListOf(
-            Pl2("1B", mutableIntStateOf(70)),
-            Pl2("2B", mutableIntStateOf(90)),
-            Pl2("3B", mutableIntStateOf(110))
+            Pl2("1B", mutableIntStateOf(65)),
+            Pl2("2B", mutableIntStateOf(85)),
+            Pl2("3B", mutableIntStateOf(105))
         )
     }
-    val allPlayersButtons = pl1Buttons + pl2Buttons
-    val winner = WinnerData()
     val setValue = SetValue()
-    var colorRow1 = remember { mutableStateOf(Color.DarkGray) }
-    var colorRow2 = remember { mutableStateOf(Color.Gray) }
+    var state = remember { mutableStateOf<GameState>(GameState.Playing) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxSize()
+            .background(theme.themeBackNow.value),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(45.dp))
-                .background(colorRow2.value),
+                .background(theme.themeRowNow.value),
             horizontalArrangement = Arrangement.SpaceAround
-
         ) {
             repeat(3) { index ->
-                Draw_Pl2(pl2Buttons[index], setValue, allPlayersButtons)
+                Draw_Pl2(pl2Buttons[index], setValue, pl2Buttons, theme)
             }
         }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3), // Фиксированное количество колонок - 3
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .background(Color(0xFFFFBF00)),
-            horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступы между колонками
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Отступы между рядами
+                .background(theme.themeBackNow.value)
         ) {
-            items(buttonsBoard.size) { index ->
-                DrawBoard(
-                    buttonsBoard[index],
-                    setValue,
-                    buttonsBoard,
-                    allPlayersButtons,
-                    winner
-                )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3), // Фиксированное количество колонок - 3
+                modifier = Modifier
+                    .weight(0.92f)
+                    .padding(horizontal = 3.dp)
+                    .background(Color(0xFFFFBF00)),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступы между колонками
+                verticalArrangement = Arrangement.spacedBy(8.dp) // Отступы между рядами
+            ) {
+                items(buttonsBoard.size) { index ->
+                    DrawBoard(
+                        buttonsBoard[index],
+                        setValue,
+                        buttonsBoard,
+                        pl1Buttons,
+                        pl2Buttons,
+                        state,
+                        theme
+                    )
+                }
             }
+            Button(
+                onClick = {},
+                modifier = Modifier.weight(0.06f).height(330.dp).padding(end = 3.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Yellow,
+                    contentColor = Color.White
+                )){}
         }
         Row(
             modifier = Modifier
@@ -142,15 +159,14 @@ private fun Oblects() {
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(45.dp))
-                .background(colorRow1.value),
+                .background(theme.themeRowNow.value),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceAround
 
         ) {
             repeat(3) { index ->
-                Draw_Pl1(pl1Buttons[index], setValue, allPlayersButtons)
+                Draw_Pl1(pl1Buttons[index], setValue, pl1Buttons, theme)
             }
         }
     }
-    Winner(winner, buttonsBoard, pl1Buttons, pl2Buttons, setValue, colorRow1, colorRow2)
 }

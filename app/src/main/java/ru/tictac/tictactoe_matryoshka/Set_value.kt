@@ -9,7 +9,6 @@ data class SetValue(
     var id: String = "",
     var oldBoardId: String = "",
     var whoWalk: Boolean = true, // true -> Red | false -> Blue
-    var selected: Boolean = false,
     var color: MutableState<Color> = mutableStateOf(Color.Unspecified),
     var size: MutableState<Float> = mutableFloatStateOf(0f)
 )

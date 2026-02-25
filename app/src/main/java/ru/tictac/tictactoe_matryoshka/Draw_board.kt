@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,14 +21,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun DrawBoard(
     item: BoardModel,
-    click: SetValue,
+    set: SetValue,
     buttonsBoard: List<BoardModel>,
-    buttonsPlayers: List<Players>,
-    winner: WinnerData) {
+    pl1buttons: List<Pl1>,
+    pl2buttons: List<Pl2>,
+    state: MutableState<GameState>,
+    theme: Theme
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,12 +42,7 @@ fun DrawBoard(
     ) {
         Button(
             onClick = {
-                if (click.selected){clickBoardButtonSet(item,
-                    click,
-                    buttonsBoard,
-                    buttonsPlayers,
-                    winner)}
-                else {clickBoardButtonRearrange(item, click, buttonsBoard, buttonsPlayers)}
+                clickBoardButton(item, set, buttonsBoard, pl1buttons, pl2buttons, state, theme)
             },
             modifier = Modifier
                 .fillMaxSize(item.sizeNow.value)
