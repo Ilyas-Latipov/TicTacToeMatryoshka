@@ -11,13 +11,13 @@ fun clickPlayer1Button(
 ) {
     when {
         button.id != set.oldBoardId -> {
-            pl1buttons.forEach { it.enabled.value = false }
+            pl1buttons.forEach {if (button.id != it.id){it.enabled.value = false}}
             clickPlayerButtonSet(button, set)
         }
 
         else -> {
             clickPlayerButtonRetry(button, set)
-            pl1buttons.forEach { it.enabled.value = true }
+            pl1buttons.forEach {it.enabled.value = true}
         }
     }
 }
@@ -30,13 +30,13 @@ fun clickPlayer2Button(
 ) {
     when {
         button.id != set.oldBoardId -> {
-            pl2buttons.forEach { it.enabled.value = false }
+            pl2buttons.forEach {if (button.id != it.id){it.enabled.value = false}}
             clickPlayerButtonSet(button, set)
         }
 
         else -> {
             clickPlayerButtonRetry(button, set)
-            pl2buttons.forEach { it.enabled.value = true }
+            pl2buttons.forEach {it.enabled.value = true}
         }
     }
 }
@@ -103,7 +103,7 @@ fun clickBoardButtonSet(
     state: MutableState<GameState>,
     theme: Theme
 ) {
-    if (set.id[0].toString().toInt() * 0.3 < button.sizeNow.value) {
+    if (set.id[0].toString().toInt() * 0.28 < button.sizeNow.value) {
         return
     }
     decryptor(set.id, button)
