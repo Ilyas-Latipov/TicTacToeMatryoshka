@@ -1,12 +1,12 @@
 package ru.tictac.tictactoe_matryoshka
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,64 +14,75 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Settings
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import android.content.pm.ActivityInfo
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.platform.LocalConfiguration
+import ru.tictac.tictactoe_matryoshka.models.SetValue
+import ru.tictac.tictactoe_matryoshka.models.BoardModel
+import ru.tictac.tictactoe_matryoshka.models.GameState
+import ru.tictac.tictactoe_matryoshka.models.Pl1
+import ru.tictac.tictactoe_matryoshka.models.Pl2
+import ru.tictac.tictactoe_matryoshka.models.Theme
+import ru.tictac.tictactoe_matryoshka.models.ThemeStorage
+import ru.tictac.tictactoe_matryoshka.logic.restart
+import ru.tictac.tictactoe_matryoshka.ui.DrawBoard
+import ru.tictac.tictactoe_matryoshka.ui.Draw_Pl1
+import ru.tictac.tictactoe_matryoshka.ui.Draw_Pl2
+import ru.tictac.tictactoe_matryoshka.ui.OpenSetting
+import ru.tictac.tictactoe_matryoshka.ui.OpenTheme
+import ru.tictac.tictactoe_matryoshka.ui.SettingButton
+import ru.tictac.tictactoe_matryoshka.ui.Winner
+import ru.tictac.tictactoe_matryoshka.ui.applyTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var themeStorage: ThemeStorage
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                )
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+        insetsController.apply {
+            hide(WindowInsetsCompat.Type.statusBars())
+            hide(WindowInsetsCompat.Type.navigationBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
+        themeStorage = ThemeStorage(this)
         enableEdgeToEdge()
+
         setContent {
-            Oblects()
+            GameApp(themeStorage)
         }
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    )
-        }
-
     }
 }
 
-@Preview(showSystemUi = true)
 @Composable
-private fun Oblects() {
-    val theme = Theme()
+fun GameApp(themeStorage: ThemeStorage) {
+    val theme = remember { Theme() }
     val buttonsBoard = remember {
-        mutableListOf(
+        mutableStateListOf(
             BoardModel("1", "1245", mutableStateOf(theme.themeBackNow.value)),
             BoardModel("2", "123456", mutableStateOf(theme.themeBackNow.value)),
             BoardModel("3", "2356", mutableStateOf(theme.themeBackNow.value)),
@@ -83,22 +94,41 @@ private fun Oblects() {
             BoardModel("9", "5689", mutableStateOf(theme.themeBackNow.value))
         )
     }
+    // Загрузка последней темы
+    LaunchedEffect(Unit) {
+        applyTheme(theme, buttonsBoard, themeStorage.isDarkTheme)
+    }
+
+    Oblects(
+        theme = theme,
+        themeStorage = themeStorage,
+        buttonsBoard = buttonsBoard
+    )
+}
+
+@Composable
+private fun Oblects(
+    theme: Theme,
+    themeStorage: ThemeStorage,
+    buttonsBoard: List<BoardModel>
+) {
+    val maxWidth = LocalConfiguration.current.screenWidthDp
     val pl1Buttons = remember {
         mutableListOf(
-            Pl1("3R", mutableIntStateOf(105)),
-            Pl1("2R", mutableIntStateOf(85)),
-            Pl1("1R", mutableIntStateOf(65))
+            Pl1("3R", mutableIntStateOf(90)),
+            Pl1("2R", mutableIntStateOf(70)),
+            Pl1("1R", mutableIntStateOf(50))
         )
     }
     val pl2Buttons = remember {
         mutableListOf(
-            Pl2("1B", mutableIntStateOf(65)),
-            Pl2("2B", mutableIntStateOf(85)),
-            Pl2("3B", mutableIntStateOf(105))
+            Pl2("1B", mutableIntStateOf(50)),
+            Pl2("2B", mutableIntStateOf(70)),
+            Pl2("3B", mutableIntStateOf(90))
         )
     }
-    val setValue = SetValue()
-    var state = remember { mutableStateOf<GameState>(GameState.Playing) }
+    val setValue = remember { SetValue() }
+    val state = remember { mutableStateOf<GameState>(GameState.Playing) }
 
     Column(
         modifier = Modifier
@@ -106,66 +136,170 @@ private fun Oblects() {
             .background(theme.themeBackNow.value),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
-
+        // Верхний ряд Pl2
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clip(RoundedCornerShape(45.dp))
-                .background(theme.themeRowNow.value),
+                .dropShadow(
+                    shape = RoundedCornerShape(percent = 45),
+                    shadow = Shadow(
+                        radius = theme.themeShapeRadiusNow.value.dp,
+                        spread = 1.dp,
+                        alpha = 0.4f,
+                        color = theme.themeShapeNow.value,
+                    )
+                )
+                .background(
+                    theme.themeRowNow.value,
+                    shape = RoundedCornerShape(percent = 45)
+                ),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             repeat(3) { index ->
                 Draw_Pl2(pl2Buttons[index], setValue, pl2Buttons, theme)
             }
         }
+
+        // Игровое поле
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(theme.themeBackNow.value)
+                .height((maxWidth * 0.94).dp)
+                .padding(start = 3.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3), // Фиксированное количество колонок - 3
-                modifier = Modifier
-                    .weight(0.92f)
-                    .padding(horizontal = 3.dp)
-                    .background(Color(0xFFFFBF00)),
-                horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступы между колонками
-                verticalArrangement = Arrangement.spacedBy(8.dp) // Отступы между рядами
-            ) {
-                items(buttonsBoard.size) { index ->
-                    DrawBoard(
-                        buttonsBoard[index],
-                        setValue,
-                        buttonsBoard,
-                        pl1Buttons,
-                        pl2Buttons,
-                        state,
-                        theme
-                    )
+            GameField(
+                buttonsBoard = buttonsBoard,
+                setValue = setValue,
+                pl1Buttons = pl1Buttons,
+                pl2Buttons = pl2Buttons,
+                state = state,
+                theme = theme
+            )
+
+            SettingButton(
+                backgroundColor = Color.Yellow,
+                icon = Icons.Default.Settings,
+                iconContentDescription = "Настройки",
+                width = (maxWidth - maxWidth * 0.94).dp,
+                height = (maxWidth / 1.5).dp,
+                pading = 3.dp,
+                iconSize = 0.9f,
+                onClick = {
+                    state.value = GameState.Settings
                 }
-            }
-            Button(
-                onClick = {},
-                modifier = Modifier.weight(0.06f).height(330.dp).padding(end = 3.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Yellow,
-                    contentColor = Color.White
-                )){}
+            )
         }
+
+        // Нижний ряд Pl1
         Row(
             modifier = Modifier
                 .align(Alignment.End)
                 .fillMaxWidth()
                 .padding(16.dp)
-                .clip(RoundedCornerShape(45.dp))
-                .background(theme.themeRowNow.value),
+                .dropShadow(
+                    shape = RoundedCornerShape(percent = 45),
+                    shadow = Shadow(
+                        radius = theme.themeShapeRadiusNow.value.dp,
+                        spread = 1.dp,
+                        alpha = 0.4f,
+                        color = theme.themeShapeNow.value,
+                    )
+                )
+                .background(
+                    theme.themeRowNow.value,
+                    shape = RoundedCornerShape(percent = 45)
+                ),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceAround
-
         ) {
             repeat(3) { index ->
                 Draw_Pl1(pl1Buttons[index], setValue, pl1Buttons, theme)
+            }
+        }
+    }
+
+    // Обработка состояний
+    when (state.value) {
+        GameState.Playing -> {}
+        GameState.Settings -> {
+            OpenSetting(theme, state)
+        }
+
+        GameState.Restart -> {
+            restart(state, buttonsBoard, pl1Buttons, pl2Buttons, setValue, theme)
+        }
+
+        GameState.Theme -> {
+            OpenTheme(theme, state, buttonsBoard, themeStorage)
+        }
+
+        GameState.Help -> {}
+        is GameState.GameOver -> {
+            Winner(
+                theme,
+                state,
+                (state.value as GameState.GameOver).winners
+            )
+        }
+    }
+}
+
+@Composable
+fun GameField(
+    buttonsBoard: List<BoardModel>,
+    setValue: SetValue,
+    pl1Buttons: List<Pl1>,
+    pl2Buttons: List<Pl2>,
+    state: MutableState<GameState>,
+    theme: Theme
+) {
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .dropShadow(
+                shape = RectangleShape,
+                shadow = Shadow(
+                    radius = theme.themeShapeRadiusNow.value.dp,
+                    spread = 2.dp,
+                    alpha = 0.4f,
+                    color = theme.themeShapeNow.value,
+                )
+            )
+            .background(Color(0xFFFFBF00))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            for (row in 0..2) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    for (col in 0..2) {
+                        val index = row * 3 + col
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .padding(3.dp)
+                        ) {
+                            DrawBoard(
+                                buttonsBoard[index],
+                                setValue,
+                                buttonsBoard,
+                                pl1Buttons,
+                                pl2Buttons,
+                                state,
+                                theme
+                            )
+                        }
+                    }
+                }
             }
         }
     }

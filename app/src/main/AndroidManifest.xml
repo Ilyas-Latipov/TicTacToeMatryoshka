@@ -15,8 +15,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TicTacToe_matryoshka"
-            android:screenOrientation="portrait">
+            android:theme="@style/Theme.TicTacToe_matryoshka">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

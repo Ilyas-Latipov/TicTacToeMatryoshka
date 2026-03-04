@@ -1,7 +1,6 @@
-package ru.tictac.tictactoe_matryoshka
+package ru.tictac.tictactoe_matryoshka.models
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -18,7 +17,7 @@ interface Players {
 data class Pl1(
     override val id: String,
     override var size: MutableState<Int>,
-    override var count: MutableState<Int> = mutableIntStateOf(3),
+    override var count: MutableState<Int> = mutableIntStateOf(2),
     override val color: MutableState<Color> = mutableStateOf(Color.Red),
     override var enabled: MutableState<Boolean> = mutableStateOf(true),
 ) : Players
@@ -26,7 +25,7 @@ data class Pl1(
 data class Pl2(
     override val id: String,
     override var size: MutableState<Int>,
-    override var count: MutableState<Int> = mutableIntStateOf(3),
+    override var count: MutableState<Int> = mutableIntStateOf(2),
     override val color: MutableState<Color> = mutableStateOf(Color.Blue),
     override var enabled: MutableState<Boolean> = mutableStateOf(false),
 ) : Players

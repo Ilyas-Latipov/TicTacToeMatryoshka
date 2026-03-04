@@ -1,7 +1,14 @@
-package ru.tictac.tictactoe_matryoshka
+package ru.tictac.tictactoe_matryoshka.logic
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
+import ru.tictac.tictactoe_matryoshka.models.BoardModel
+import ru.tictac.tictactoe_matryoshka.models.GameState
+import ru.tictac.tictactoe_matryoshka.models.Pl1
+import ru.tictac.tictactoe_matryoshka.models.Pl2
+import ru.tictac.tictactoe_matryoshka.models.Players
+import ru.tictac.tictactoe_matryoshka.models.SetValue
+import ru.tictac.tictactoe_matryoshka.models.Theme
 
 
 fun clickPlayer1Button(
@@ -11,13 +18,21 @@ fun clickPlayer1Button(
 ) {
     when {
         button.id != set.oldBoardId -> {
-            pl1buttons.forEach {if (button.id != it.id){it.enabled.value = false}}
+            pl1buttons.forEach {
+                if (button.id != it.id) {
+                    it.enabled.value = false
+                }
+            }
             clickPlayerButtonSet(button, set)
         }
 
         else -> {
             clickPlayerButtonRetry(button, set)
-            pl1buttons.forEach {it.enabled.value = true}
+            pl1buttons.forEach {
+                if (it.count.value != 0) {
+                    it.enabled.value = true
+                }
+            }
         }
     }
 }
@@ -30,13 +45,21 @@ fun clickPlayer2Button(
 ) {
     when {
         button.id != set.oldBoardId -> {
-            pl2buttons.forEach {if (button.id != it.id){it.enabled.value = false}}
+            pl2buttons.forEach {
+                if (button.id != it.id) {
+                    it.enabled.value = false
+                }
+            }
             clickPlayerButtonSet(button, set)
         }
 
         else -> {
             clickPlayerButtonRetry(button, set)
-            pl2buttons.forEach {it.enabled.value = true}
+            pl2buttons.forEach {
+                if (it.count.value != 0) {
+                    it.enabled.value = true
+                }
+            }
         }
     }
 }
@@ -78,7 +101,8 @@ fun clickBoardButton(
                 set,
                 buttonsBoard,
                 pl1buttons,
-                pl2buttons
+                pl2buttons,
+                theme
             )
         }
 
@@ -126,14 +150,15 @@ fun clickBoardButtonRearrange(
     set: SetValue,
     buttonsBoard: List<BoardModel>,
     pl1buttons: List<Pl1>,
-    pl2buttons: List<Pl2>
+    pl2buttons: List<Pl2>,
+    theme: Theme
 ) {
     when {
         set.whoWalk && button.colorNow.value == Color.Blue -> return
         !set.whoWalk && button.colorNow.value == Color.Red -> return
     }
     set.oldBoardId = button.id
-    buttonsBoardEnabled(button, buttonsBoard)
+    buttonsBoardEnabled(button, buttonsBoard, theme)
     when {
         set.whoWalk -> pl1buttons.forEach { it.enabled.value = false }
         else -> pl2buttons.forEach { it.enabled.value = false }
@@ -170,11 +195,11 @@ fun clickBoardButtonRearrange(
 }
 
 
-fun buttonsBoardEnabled(button: BoardModel, buttons: List<BoardModel>) {
+fun buttonsBoardEnabled(button: BoardModel, buttons: List<BoardModel>, theme: Theme) {
     buttons.forEach {
         if (button.id !in it.neighbors) {
             it.enabled.value = false
-            it.buttonBackground.value = Color.Gray
+            it.buttonBackground.value = theme.themeEnabledNow.value
         }
     }
 }
@@ -241,10 +266,24 @@ fun checkWin(board: List<BoardModel>, color: Color): Boolean {
     }
 }
 
+fun checkWinners(board: List<BoardModel>): List<Color> {
+    val winners = mutableListOf<Color>()
+
+    if (checkWin(board, Color.Red)) {
+        winners.add(Color.Red)
+    }
+    if (checkWin(board, Color.Blue)) {
+        winners.add(Color.Blue)
+    }
+
+    return winners
+}
+
 fun win(board: List<BoardModel>, state: MutableState<GameState>) {
-    when {
-        checkWin(board, Color.Red) -> state.value = GameState.GameOver("Красные победили!")
-        checkWin(board, Color.Blue) -> state.value= GameState.GameOver("Синие победили!")
+    val winners = checkWinners(board)
+
+    if (winners.isNotEmpty()) {
+        state.value = GameState.GameOver(winners)
     }
 }
 
@@ -253,7 +292,8 @@ fun restart(
     board: List<BoardModel>,
     player1: List<Pl1>,
     player2: List<Pl2>,
-    set: SetValue
+    set: SetValue,
+    theme: Theme
 ) {
     board.forEach { cell ->
         cell.lvl1 = ""
@@ -261,15 +301,15 @@ fun restart(
         cell.lvl3 = ""
         cell.colorNow.value = Color.Unspecified
         cell.sizeNow.value = 0f
-        cell.buttonBackground.value = Color.White
+        cell.buttonBackground.value = theme.themeBackNow.value
         cell.enabled.value = true
     }
     player1.forEach { player ->
-        player.count.value = 3
+        player.count.value = 2
         player.enabled.value = true
     }
     player2.forEach { player ->
-        player.count.value = 3
+        player.count.value = 2
         player.enabled.value = false
     }
     set.id = ""
@@ -277,7 +317,7 @@ fun restart(
     set.whoWalk = true
     set.color.value = Color.Unspecified
     set.size.value = 0f
-    state.value= GameState.Playing
+    state.value = GameState.Playing
 }
 
 

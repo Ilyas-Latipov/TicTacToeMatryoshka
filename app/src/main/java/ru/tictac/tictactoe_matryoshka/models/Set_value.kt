@@ -1,4 +1,4 @@
-package ru.tictac.tictactoe_matryoshka
+package ru.tictac.tictactoe_matryoshka.models
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
