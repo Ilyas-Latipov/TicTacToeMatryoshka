@@ -16,18 +16,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ripple
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import ru.tictac.tictactoe_matryoshka.models.SetValue
 import ru.tictac.tictactoe_matryoshka.logic.clickPlayer1Button
 import ru.tictac.tictactoe_matryoshka.logic.clickPlayer2Button
+import ru.tictac.tictactoe_matryoshka.models.GameState
 import ru.tictac.tictactoe_matryoshka.models.Pl1
 import ru.tictac.tictactoe_matryoshka.models.Pl2
 import ru.tictac.tictactoe_matryoshka.models.Theme
+import ru.tictac.tictactoe_matryoshka.logic.countEditor
+import ru.tictac.tictactoe_matryoshka.vibrate
+
 
 @Composable
-fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme) {
+fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme, state: MutableState<GameState>) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .padding(vertical = 8.dp)
@@ -48,7 +55,9 @@ fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme) {
                             bounded = false
                         )
                     ) {
-                        clickPlayer1Button(item, set, pl1buttons)
+                        vibrate(context)
+                        if (state.value == GameState.Count) {countEditor(theme, item.id)}
+                        else{clickPlayer1Button(item, set, pl1buttons)}
                     }
                 } else {
                     Modifier
@@ -67,7 +76,8 @@ fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme) {
 
 
 @Composable
-fun Draw_Pl2(item: Pl2, set: SetValue, pl2buttons: List<Pl2>, theme: Theme) {
+fun Draw_Pl2(item: Pl2, set: SetValue, pl2buttons: List<Pl2>, theme: Theme, state: MutableState<GameState>) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .padding(vertical = 8.dp)
@@ -88,7 +98,9 @@ fun Draw_Pl2(item: Pl2, set: SetValue, pl2buttons: List<Pl2>, theme: Theme) {
                             bounded = false
                         )
                     ) {
-                        clickPlayer2Button(item, set, pl2buttons)
+                        vibrate(context)
+                        if (state.value == GameState.Count) {countEditor(theme, item.id)}
+                        else{clickPlayer2Button(item, set, pl2buttons)}
                     }
                 } else {
                     Modifier

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ru.tictac.tictactoe_matryoshka.models.SetValue
 import ru.tictac.tictactoe_matryoshka.logic.clickBoardButton
@@ -25,6 +26,7 @@ import ru.tictac.tictactoe_matryoshka.models.GameState
 import ru.tictac.tictactoe_matryoshka.models.Pl1
 import ru.tictac.tictactoe_matryoshka.models.Pl2
 import ru.tictac.tictactoe_matryoshka.models.Theme
+import ru.tictac.tictactoe_matryoshka.vibrate
 
 @Composable
 fun DrawBoard(
@@ -36,6 +38,7 @@ fun DrawBoard(
     state: MutableState<GameState>,
     theme: Theme
 ) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,6 +71,7 @@ fun DrawBoard(
                                 bounded = false
                             )
                         ) {
+                            vibrate(context)
                             clickBoardButton(
                                 item, set, buttonsBoard,
                                 pl1buttons, pl2buttons, state, theme

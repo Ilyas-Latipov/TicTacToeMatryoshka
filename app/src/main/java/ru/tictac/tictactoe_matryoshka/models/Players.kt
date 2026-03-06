@@ -17,7 +17,7 @@ interface Players {
 data class Pl1(
     override val id: String,
     override var size: MutableState<Int>,
-    override var count: MutableState<Int> = mutableIntStateOf(2),
+    override var count: MutableState<Int>,
     override val color: MutableState<Color> = mutableStateOf(Color.Red),
     override var enabled: MutableState<Boolean> = mutableStateOf(true),
 ) : Players
@@ -25,7 +25,7 @@ data class Pl1(
 data class Pl2(
     override val id: String,
     override var size: MutableState<Int>,
-    override var count: MutableState<Int> = mutableIntStateOf(2),
+    override var count: MutableState<Int>,
     override val color: MutableState<Color> = mutableStateOf(Color.Blue),
     override var enabled: MutableState<Boolean> = mutableStateOf(false),
 ) : Players

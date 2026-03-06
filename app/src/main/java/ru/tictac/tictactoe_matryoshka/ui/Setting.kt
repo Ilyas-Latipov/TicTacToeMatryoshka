@@ -30,6 +30,8 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.filled.Animation
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -37,10 +39,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import ru.tictac.tictactoe_matryoshka.models.BoardModel
 import ru.tictac.tictactoe_matryoshka.models.GameState
+import ru.tictac.tictactoe_matryoshka.models.Pl1
+import ru.tictac.tictactoe_matryoshka.models.Pl2
 import ru.tictac.tictactoe_matryoshka.models.Theme
 import ru.tictac.tictactoe_matryoshka.models.ThemeStorage
+import ru.tictac.tictactoe_matryoshka.logic.applyTheme
+import ru.tictac.tictactoe_matryoshka.vibrate
 
 
 @Composable
@@ -52,7 +59,7 @@ fun SettingButton(
     iconContentDescription: String? = null,
     width: Dp = (LocalConfiguration.current.screenWidthDp / 7.2).dp,
     height: Dp = (LocalConfiguration.current.screenWidthDp / 7.2).dp,
-    pading: Dp = 15.dp,
+    pading: Dp = 12.dp,
     iconSize: Float = 0.5f,
     onClick: () -> Unit
 ) {
@@ -82,6 +89,7 @@ fun OpenSetting(
     theme: Theme,
     state: MutableState<GameState>
 ) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -109,6 +117,7 @@ fun OpenSetting(
                 icon = Icons.Default.Autorenew,
                 iconContentDescription = "Перезапустить",
                 onClick = {
+                    vibrate(context, 35)
                     state.value = GameState.Restart
                 }
             )
@@ -117,15 +126,27 @@ fun OpenSetting(
                 icon = Icons.Default.ColorLens,
                 iconContentDescription = "Сменить тему",
                 onClick = {
+                    vibrate(context, 35)
                     state.value = GameState.Theme
                 }
             )
+
             SettingButton(
                 backgroundColor = Color.Green,
                 icon = Icons.Default.QuestionMark,
                 iconContentDescription = "Помощь",
                 onClick = {
+                    vibrate(context, 35)
                     state.value = GameState.Help
+                }
+            )
+            SettingButton(
+                backgroundColor = Color.Cyan,
+                icon = Icons.Default.Animation,
+                iconContentDescription = "Сменить количество фишек",
+                onClick = {
+                    vibrate(context, 35)
+                    state.value = GameState.Count
                 }
             )
             SettingButton(
@@ -133,6 +154,7 @@ fun OpenSetting(
                 icon = Icons.Default.Close,
                 iconContentDescription = "Продолжить игру",
                 onClick = {
+                    vibrate(context, 35)
                     state.value = GameState.Playing
                 }
             )
@@ -148,6 +170,7 @@ fun OpenTheme(
     buttonsBoard: List<BoardModel>,
     themeStorage: ThemeStorage
 ) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -174,6 +197,7 @@ fun OpenTheme(
                 icon = Icons.Default.WbSunny,
                 iconContentDescription = "Светлая тема",
                 onClick = {
+                    vibrate(context, 35)
                     applyTheme(theme, buttonsBoard, false)
                     themeStorage.isDarkTheme = false
                     state.value = GameState.Settings
@@ -185,6 +209,7 @@ fun OpenTheme(
                 icon = Icons.Default.DarkMode,
                 iconContentDescription = "Темная тема",
                 onClick = {
+                    vibrate(context, 35)
                     applyTheme(theme, buttonsBoard, true)
                     themeStorage.isDarkTheme = true
                     state.value = GameState.Settings
@@ -195,6 +220,7 @@ fun OpenTheme(
                 icon = Icons.Default.Close,
                 iconContentDescription = "Назад",
                 onClick = {
+                    vibrate(context, 35)
                     state.value = GameState.Settings
                 }
             )
@@ -202,27 +228,46 @@ fun OpenTheme(
     }
 }
 
-// Функция применения темы ко всем элементам
-fun applyTheme(
-    theme: Theme,
-    buttonsBoard: List<BoardModel>,
-    isDark: Boolean
-) {
-    val newBack = if (isDark) theme.blackThemeBack else theme.whiteThemeBack
-    val newEnabled = if (isDark) theme.blackThemeEnabled else theme.whiteThemeEnabled
 
-    buttonsBoard.forEach {
-        when (it.buttonBackground.value) {
-            theme.themeBackNow.value -> it.buttonBackground.value = newBack
-            theme.themeEnabledNow.value -> it.buttonBackground.value = newEnabled
+@Composable
+fun OpenCount(
+    theme: Theme,
+    state: MutableState<GameState>,
+    pl1buttons: List<Pl1>,
+    pl2buttons: List<Pl2>
+) {
+    val context = LocalContext.current
+    val maxWidth = LocalConfiguration.current.screenWidthDp
+    pl1buttons.forEach { it.enabled.value = true }
+    pl2buttons.forEach { it.enabled.value = true }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(maxWidth.dp)
+                .background(theme.themeBackNow.value)
+                .pointerInput(Unit) {},
+            contentAlignment = Alignment.Center
+        ) {
+            SettingButton(
+                backgroundColor = Color.Yellow,
+                icon = Icons.Default.Autorenew,
+                iconContentDescription = "Перезапустить",
+                width = maxWidth.dp,
+                height = 70.dp,
+                onClick = {
+                    vibrate(context, 40)
+                    state.value = GameState.Restart
+                }
+            )
         }
     }
-    theme.themeShapeNow.value = if (isDark) Color.White else Color.Black
-    theme.themeShapeRadiusNow.value = if (isDark) 1 else 3
-    theme.themeRowNow.value = if (isDark) theme.blackThemeRow else theme.whiteThemeRow
-    theme.themeBackNow.value = newBack
-    theme.themeEnabledNow.value = newEnabled
+
 }
+
 
 @Composable
 fun Winner(
@@ -230,6 +275,7 @@ fun Winner(
     state: MutableState<GameState>,
     winners: List<Color>
 ) {
+    val context = LocalContext.current
     // Анимация мерцания
     val infiniteTransition = rememberInfiniteTransition()
     val glowAlpha = infiniteTransition.animateFloat(
@@ -285,6 +331,7 @@ fun Winner(
                 width = LocalConfiguration.current.screenWidthDp.dp,
                 height = 70.dp,
                 onClick = {
+                    vibrate(context, 40)
                     state.value = GameState.Restart
                 }
             )

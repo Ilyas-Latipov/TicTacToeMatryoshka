@@ -236,7 +236,7 @@ fun whoWalk(whoWalk: Boolean, pl1buttons: List<Pl1>, pl2buttons: List<Pl2>) {
             pl2buttons.forEach { it.enabled.value = false }
             pl1buttons.forEach {
                 it.enabled.value = true
-                if (it.count.value == 0) {
+                if (it.count.value < 1) {
                     it.enabled.value = false
                 }
             }
@@ -246,7 +246,7 @@ fun whoWalk(whoWalk: Boolean, pl1buttons: List<Pl1>, pl2buttons: List<Pl2>) {
             pl1buttons.forEach { it.enabled.value = false }
             pl2buttons.forEach {
                 it.enabled.value = true
-                if (it.count.value == 0) {
+                if (it.count.value < 1) {
                     it.enabled.value = false
                 }
             }
@@ -290,8 +290,8 @@ fun win(board: List<BoardModel>, state: MutableState<GameState>) {
 fun restart(
     state: MutableState<GameState>,
     board: List<BoardModel>,
-    player1: List<Pl1>,
-    player2: List<Pl2>,
+    pl1buttons: List<Pl1>,
+    pl2buttons: List<Pl2>,
     set: SetValue,
     theme: Theme
 ) {
@@ -304,13 +304,21 @@ fun restart(
         cell.buttonBackground.value = theme.themeBackNow.value
         cell.enabled.value = true
     }
-    player1.forEach { player ->
-        player.count.value = 2
-        player.enabled.value = true
+    pl1buttons.forEach { button ->
+        when (button.id[0]) {
+            '3' -> button.count.value = theme.count3R.value
+            '2' -> button.count.value = theme.count2R.value
+            '1' -> button.count.value = theme.count1R.value
+        }
+        button.enabled.value = true
     }
-    player2.forEach { player ->
-        player.count.value = 2
-        player.enabled.value = false
+    pl2buttons.forEach { button ->
+        when (button.id[0]) {
+            '3' -> button.count.value = theme.count1B.value
+            '2' -> button.count.value = theme.count2B.value
+            '1' -> button.count.value = theme.count3B.value
+        }
+        button.enabled.value = false
     }
     set.id = ""
     set.oldBoardId = ""
@@ -318,6 +326,7 @@ fun restart(
     set.color.value = Color.Unspecified
     set.size.value = 0f
     state.value = GameState.Playing
+    whoWalk(set.whoWalk, pl1buttons, pl2buttons)
 }
 
 

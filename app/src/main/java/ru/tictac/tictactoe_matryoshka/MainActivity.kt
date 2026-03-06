@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import ru.tictac.tictactoe_matryoshka.models.SetValue
 import ru.tictac.tictactoe_matryoshka.models.BoardModel
 import ru.tictac.tictactoe_matryoshka.models.GameState
@@ -48,11 +49,12 @@ import ru.tictac.tictactoe_matryoshka.logic.restart
 import ru.tictac.tictactoe_matryoshka.ui.DrawBoard
 import ru.tictac.tictactoe_matryoshka.ui.Draw_Pl1
 import ru.tictac.tictactoe_matryoshka.ui.Draw_Pl2
+import ru.tictac.tictactoe_matryoshka.ui.OpenCount
 import ru.tictac.tictactoe_matryoshka.ui.OpenSetting
 import ru.tictac.tictactoe_matryoshka.ui.OpenTheme
 import ru.tictac.tictactoe_matryoshka.ui.SettingButton
 import ru.tictac.tictactoe_matryoshka.ui.Winner
-import ru.tictac.tictactoe_matryoshka.ui.applyTheme
+import ru.tictac.tictactoe_matryoshka.logic.applyTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var themeStorage: ThemeStorage
@@ -79,7 +81,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GameApp(themeStorage: ThemeStorage) {
+private fun GameApp(themeStorage: ThemeStorage) {
     val theme = remember { Theme() }
     val buttonsBoard = remember {
         mutableStateListOf(
@@ -112,19 +114,20 @@ private fun Oblects(
     themeStorage: ThemeStorage,
     buttonsBoard: List<BoardModel>
 ) {
+    val context = LocalContext.current
     val maxWidth = LocalConfiguration.current.screenWidthDp
     val pl1Buttons = remember {
         mutableListOf(
-            Pl1("3R", mutableIntStateOf(90)),
-            Pl1("2R", mutableIntStateOf(70)),
-            Pl1("1R", mutableIntStateOf(50))
+            Pl1("3R", mutableIntStateOf(90), theme.count3R),
+            Pl1("2R", mutableIntStateOf(70), theme.count2R),
+            Pl1("1R", mutableIntStateOf(50), theme.count1R)
         )
     }
     val pl2Buttons = remember {
         mutableListOf(
-            Pl2("1B", mutableIntStateOf(50)),
-            Pl2("2B", mutableIntStateOf(70)),
-            Pl2("3B", mutableIntStateOf(90))
+            Pl2("1B", mutableIntStateOf(50), theme.count1B),
+            Pl2("2B", mutableIntStateOf(70), theme.count2B),
+            Pl2("3B", mutableIntStateOf(90), theme.count3B)
         )
     }
     val setValue = remember { SetValue() }
@@ -157,7 +160,7 @@ private fun Oblects(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             repeat(3) { index ->
-                Draw_Pl2(pl2Buttons[index], setValue, pl2Buttons, theme)
+                Draw_Pl2(pl2Buttons[index], setValue, pl2Buttons, theme, state)
             }
         }
 
@@ -187,6 +190,7 @@ private fun Oblects(
                 pading = 3.dp,
                 iconSize = 0.9f,
                 onClick = {
+                    vibrate(context, 40)
                     state.value = GameState.Settings
                 }
             )
@@ -215,7 +219,7 @@ private fun Oblects(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             repeat(3) { index ->
-                Draw_Pl1(pl1Buttons[index], setValue, pl1Buttons, theme)
+                Draw_Pl1(pl1Buttons[index], setValue, pl1Buttons, theme, state)
             }
         }
     }
@@ -235,8 +239,13 @@ private fun Oblects(
             OpenTheme(theme, state, buttonsBoard, themeStorage)
         }
 
-        GameState.Help -> {}
+        GameState.Count -> {
+            OpenCount(theme, state, pl1Buttons, pl2Buttons)
+        }
+
+        GameState.Help -> {TODO()}
         is GameState.GameOver -> {
+            vibrate(context, 100)
             Winner(
                 theme,
                 state,
