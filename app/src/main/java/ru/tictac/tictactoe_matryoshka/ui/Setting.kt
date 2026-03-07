@@ -30,9 +30,12 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.filled.Animation
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material3.Text
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -40,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import ru.tictac.tictactoe_matryoshka.models.BoardModel
 import ru.tictac.tictactoe_matryoshka.models.GameState
 import ru.tictac.tictactoe_matryoshka.models.Pl1
@@ -59,6 +63,7 @@ fun SettingButton(
     iconContentDescription: String? = null,
     width: Dp = (LocalConfiguration.current.screenWidthDp / 7.2).dp,
     height: Dp = (LocalConfiguration.current.screenWidthDp / 7.2).dp,
+    rotate: Float = 90f,
     pading: Dp = 12.dp,
     iconSize: Float = 0.5f,
     onClick: () -> Unit
@@ -77,12 +82,71 @@ fun SettingButton(
             contentDescription = iconContentDescription,
             tint = iconColor,
             modifier = Modifier
-                .rotate(90f)
+                .rotate(rotate)
                 .fillMaxSize(iconSize)
         )
     }
 }
 
+@Composable
+fun HelpRow(
+    theme: Theme,
+    content: @Composable () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, start = 10.dp, end = 5.dp, bottom = 10.dp)
+            .dropShadow(
+                shape = RoundedCornerShape(percent = 45),
+                shadow = Shadow(
+                    radius = theme.themeShapeRadiusNow.value.dp,
+                    spread = 1.dp,
+                    alpha = 0.4f,
+                    color = theme.themeShapeNow.value,
+                )
+            )
+            .background(
+                theme.themeRowNow.value,
+                shape = RoundedCornerShape(percent = 45)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) { content() }
+}
+
+@Composable
+fun HelpBox(
+    theme: Theme,
+    text: String,
+    top: Dp = 0.dp,
+    bottom: Dp = 20.dp
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp, top = top, bottom = bottom)
+            .dropShadow(
+                shape = RoundedCornerShape(percent = 10),
+                shadow = Shadow(
+                    radius = theme.themeShapeRadiusNow.value.dp,
+                    spread = 1.dp,
+                    alpha = 0.4f,
+                    color = theme.themeShapeNow.value,
+                )
+            )
+            .background(
+                theme.themeRowNow.value,
+                shape = RoundedCornerShape(percent = 10)
+            ),
+    ) {
+        Text(
+            text = text,
+            color = theme.themeShapeNow.value,
+            fontSize = 25.sp,
+            modifier = Modifier.padding(10.dp)
+        )
+    }
+}
 
 @Composable
 fun OpenSetting(
@@ -91,8 +155,7 @@ fun OpenSetting(
 ) {
     val context = LocalContext.current
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -141,9 +204,9 @@ fun OpenSetting(
                 }
             )
             SettingButton(
-                backgroundColor = Color.Cyan,
+                backgroundColor = Color(0xFFFF9800),
                 icon = Icons.Default.Animation,
-                iconContentDescription = "Сменить количество фишек",
+                iconContentDescription = "Сменить количество фигур",
                 onClick = {
                     vibrate(context, 35)
                     state.value = GameState.Count
@@ -265,7 +328,143 @@ fun OpenCount(
             )
         }
     }
+}
 
+@Composable
+fun OpenHelp(
+    theme: Theme,
+    state: MutableState<GameState>
+) {
+    val context = LocalContext.current
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(theme.themeBackNow.value)
+    ) {
+        item {
+            HelpBox(
+                theme,
+                "Побеждает тот игрок который выстроил из 3 фигур своего цвета " +
+                        "ряд или диагональ. Большие фигуры могут крыть меньшие. Игрок может переставлять " +
+                        "свои фигуры на соседние клетки. Первыми ходят красные. У игроков есть " +
+                        "ограниченное число фигур каждого размера (по умолчанию по 3). Пока игрок " +
+                        "не поставил фигуру на поле ход можно отменить.",
+                30.dp, 40.dp
+            )
+        }
+        item {
+            HelpRow(
+                theme = theme,
+                content = {
+                    SettingButton(
+                        backgroundColor = Color.Red,
+                        icon = Icons.Default.Autorenew,
+                        iconContentDescription = "Перезапустить",
+                        width = 70.dp,
+                        height = 70.dp,
+                        rotate = 0f,
+                        onClick = {}
+                    )
+                    Text(
+                        text = "Перезапустить игру.",
+                        color = theme.themeShapeNow.value,
+                        fontSize = 30.sp
+                    )
+                }
+            )
+            HelpBox(
+                theme, "При нажатии происходит перезапуск партии. Тема игры и количество" +
+                        " фигур при начале игры сохряняется."
+            )
+        }
+        item {
+            HelpRow(
+                theme = theme,
+                content = {
+                    SettingButton(
+                        backgroundColor = Color.Yellow,
+                        icon = Icons.Default.ColorLens,
+                        iconContentDescription = "Сменить тему",
+                        width = 70.dp,
+                        height = 70.dp,
+                        rotate = 0f,
+                        onClick = {}
+                    )
+                    Text(
+                        text = "Сменить тему.",
+                        color = theme.themeShapeNow.value,
+                        fontSize = 30.sp
+                    )
+                }
+            )
+            HelpBox(
+                theme, "При нажатии появляется окошко с темами. Нажав на тему цветовая " +
+                        "палитра игры изменится."
+            )
+        }
+        item {
+            HelpRow(
+                theme = theme,
+                content = {
+                    SettingButton(
+                        backgroundColor = Color(0xFFFF9800),
+                        icon = Icons.Default.Animation,
+                        iconContentDescription = "Сменить количество фигур",
+                        width = 70.dp,
+                        height = 70.dp,
+                        rotate = 0f,
+                        onClick = {}
+                    )
+                    Text(
+                        text = "Сменить количество фигур.",
+                        color = theme.themeShapeNow.value,
+                        fontSize = 30.sp
+                    )
+                }
+            )
+            HelpBox(
+                theme, "При нажатии можно настраивать количество фигур в начале игры. " +
+                        "Нажимайте на любую фигурку и количество данной фигуры увеличится на 1. " +
+                        "Количество фигур настраивается от 0 до 9. Если количество фигур 9, то при " +
+                        "следующем нажатии количество фигур станет 0."
+            )
+        }
+        item {
+            HelpRow(
+                theme = theme,
+                content = {
+                    SettingButton(
+                        backgroundColor = Color.Blue,
+                        icon = Icons.Default.Close,
+                        iconContentDescription = "Продолжить игру",
+                        width = 70.dp,
+                        height = 70.dp,
+                        rotate = 0f,
+                        onClick = {}
+                    )
+                    Text(
+                        text = "Вернуться обратно.",
+                        color = theme.themeShapeNow.value,
+                        fontSize = 30.sp
+                    )
+                }
+            )
+            HelpBox(theme, "Возвращает вас назад в настройках.")
+        }
+        item {
+            SettingButton(
+                backgroundColor = Color.Blue,
+                icon = Icons.Default.Close,
+                iconContentDescription = "Продолжить игру",
+                width = LocalConfiguration.current.screenWidthDp.dp,
+                height = 50.dp,
+                onClick = {
+                    vibrate(context, 35)
+                    state.value = GameState.Settings
+                }
+            )
+        }
+    }
 }
 
 

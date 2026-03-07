@@ -55,6 +55,7 @@ import ru.tictac.tictactoe_matryoshka.ui.OpenTheme
 import ru.tictac.tictactoe_matryoshka.ui.SettingButton
 import ru.tictac.tictactoe_matryoshka.ui.Winner
 import ru.tictac.tictactoe_matryoshka.logic.applyTheme
+import ru.tictac.tictactoe_matryoshka.ui.OpenHelp
 
 class MainActivity : ComponentActivity() {
     private lateinit var themeStorage: ThemeStorage
@@ -243,7 +244,10 @@ private fun Oblects(
             OpenCount(theme, state, pl1Buttons, pl2Buttons)
         }
 
-        GameState.Help -> {TODO()}
+        GameState.Help -> {
+            OpenHelp(theme, state)
+        }
+
         is GameState.GameOver -> {
             vibrate(context, 100)
             Winner(
