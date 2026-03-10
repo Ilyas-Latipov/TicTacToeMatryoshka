@@ -142,7 +142,7 @@ fun HelpBox(
         Text(
             text = text,
             color = theme.themeShapeNow.value,
-            fontSize = 25.sp,
+            fontSize = 20.sp,
             modifier = Modifier.padding(10.dp)
         )
     }
@@ -346,10 +346,10 @@ fun OpenHelp(
                 theme,
                 "Побеждает тот игрок который выстроил из 3 фигур своего цвета " +
                         "ряд или диагональ. Большие фигуры могут крыть меньшие. Игрок может переставлять " +
-                        "свои фигуры на соседние клетки. Первыми ходят красные. У игроков есть " +
-                        "ограниченное число фигур каждого размера (по умолчанию по 3). Пока игрок " +
-                        "не поставил фигуру на поле ход можно отменить.",
-                30.dp, 40.dp
+                        "свои фигуры на соседние клетки (нажимая на фигурку своего цвета). Первыми " +
+                        "ходят красные. У игроков есть ограниченное число фигур каждого размера " +
+                        "(по умолчанию по 3). Пока игрок не поставил фигуру на поле ход можно отменить.",
+                40.dp, 40.dp
             )
         }
         item {
@@ -363,12 +363,13 @@ fun OpenHelp(
                         width = 70.dp,
                         height = 70.dp,
                         rotate = 0f,
+                        pading = 8.dp,
                         onClick = {}
                     )
                     Text(
                         text = "Перезапустить игру.",
                         color = theme.themeShapeNow.value,
-                        fontSize = 30.sp
+                        fontSize = 20.sp
                     )
                 }
             )
@@ -388,12 +389,13 @@ fun OpenHelp(
                         width = 70.dp,
                         height = 70.dp,
                         rotate = 0f,
+                        pading = 8.dp,
                         onClick = {}
                     )
                     Text(
                         text = "Сменить тему.",
                         color = theme.themeShapeNow.value,
-                        fontSize = 30.sp
+                        fontSize = 20.sp
                     )
                 }
             )
@@ -413,12 +415,13 @@ fun OpenHelp(
                         width = 70.dp,
                         height = 70.dp,
                         rotate = 0f,
+                        pading = 8.dp,
                         onClick = {}
                     )
                     Text(
                         text = "Сменить количество фигур.",
                         color = theme.themeShapeNow.value,
-                        fontSize = 30.sp
+                        fontSize = 20.sp
                     )
                 }
             )
@@ -440,12 +443,13 @@ fun OpenHelp(
                         width = 70.dp,
                         height = 70.dp,
                         rotate = 0f,
+                        pading = 8.dp,
                         onClick = {}
                     )
                     Text(
                         text = "Вернуться обратно.",
                         color = theme.themeShapeNow.value,
-                        fontSize = 30.sp
+                        fontSize = 20.sp
                     )
                 }
             )

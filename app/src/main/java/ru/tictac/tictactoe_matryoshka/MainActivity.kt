@@ -55,6 +55,7 @@ import ru.tictac.tictactoe_matryoshka.ui.OpenTheme
 import ru.tictac.tictactoe_matryoshka.ui.SettingButton
 import ru.tictac.tictactoe_matryoshka.ui.Winner
 import ru.tictac.tictactoe_matryoshka.logic.applyTheme
+import ru.tictac.tictactoe_matryoshka.models.StartCount
 import ru.tictac.tictactoe_matryoshka.ui.OpenHelp
 
 class MainActivity : ComponentActivity() {
@@ -84,6 +85,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun GameApp(themeStorage: ThemeStorage) {
     val theme = remember { Theme() }
+    val startCount = remember { StartCount() }
     val buttonsBoard = remember {
         mutableStateListOf(
             BoardModel("1", "1245", mutableStateOf(theme.themeBackNow.value)),
@@ -104,6 +106,7 @@ private fun GameApp(themeStorage: ThemeStorage) {
 
     Oblects(
         theme = theme,
+        startCount = startCount,
         themeStorage = themeStorage,
         buttonsBoard = buttonsBoard
     )
@@ -112,6 +115,7 @@ private fun GameApp(themeStorage: ThemeStorage) {
 @Composable
 private fun Oblects(
     theme: Theme,
+    startCount: StartCount,
     themeStorage: ThemeStorage,
     buttonsBoard: List<BoardModel>
 ) {
@@ -119,16 +123,16 @@ private fun Oblects(
     val maxWidth = LocalConfiguration.current.screenWidthDp
     val pl1Buttons = remember {
         mutableListOf(
-            Pl1("3R", mutableIntStateOf(90), theme.count3R),
-            Pl1("2R", mutableIntStateOf(70), theme.count2R),
-            Pl1("1R", mutableIntStateOf(50), theme.count1R)
+            Pl1("3R", mutableIntStateOf(90), mutableIntStateOf(startCount.count3R)),
+            Pl1("2R", mutableIntStateOf(70), mutableIntStateOf(startCount.count2R)),
+            Pl1("1R", mutableIntStateOf(50), mutableIntStateOf(startCount.count1R))
         )
     }
     val pl2Buttons = remember {
         mutableListOf(
-            Pl2("1B", mutableIntStateOf(50), theme.count1B),
-            Pl2("2B", mutableIntStateOf(70), theme.count2B),
-            Pl2("3B", mutableIntStateOf(90), theme.count3B)
+            Pl2("1B", mutableIntStateOf(50), mutableIntStateOf(startCount.count1B)),
+            Pl2("2B", mutableIntStateOf(70), mutableIntStateOf(startCount.count2B)),
+            Pl2("3B", mutableIntStateOf(90), mutableIntStateOf(startCount.count3B))
         )
     }
     val setValue = remember { SetValue() }
@@ -161,7 +165,7 @@ private fun Oblects(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             repeat(3) { index ->
-                Draw_Pl2(pl2Buttons[index], setValue, pl2Buttons, theme, state)
+                Draw_Pl2(pl2Buttons[index], setValue, pl2Buttons, theme, startCount, state)
             }
         }
 
@@ -220,7 +224,7 @@ private fun Oblects(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             repeat(3) { index ->
-                Draw_Pl1(pl1Buttons[index], setValue, pl1Buttons, theme, state)
+                Draw_Pl1(pl1Buttons[index], setValue, pl1Buttons, theme, startCount, state)
             }
         }
     }
@@ -233,7 +237,7 @@ private fun Oblects(
         }
 
         GameState.Restart -> {
-            restart(state, buttonsBoard, pl1Buttons, pl2Buttons, setValue, theme)
+            restart(state, buttonsBoard, pl1Buttons, pl2Buttons, setValue, theme, startCount)
         }
 
         GameState.Theme -> {
@@ -260,7 +264,7 @@ private fun Oblects(
 }
 
 @Composable
-fun GameField(
+private fun GameField(
     buttonsBoard: List<BoardModel>,
     setValue: SetValue,
     pl1Buttons: List<Pl1>,

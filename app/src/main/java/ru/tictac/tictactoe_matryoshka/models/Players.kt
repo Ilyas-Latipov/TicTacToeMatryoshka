@@ -1,7 +1,6 @@
 package ru.tictac.tictactoe_matryoshka.models
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 

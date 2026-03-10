@@ -16,12 +16,6 @@ sealed class GameState {
 
 
 data class Theme(
-    var count1R: MutableState<Int> = mutableIntStateOf(3),
-    var count2R: MutableState<Int> = mutableIntStateOf(3),
-    var count3R: MutableState<Int> = mutableIntStateOf(3),
-    var count1B: MutableState<Int> = mutableIntStateOf(3),
-    var count2B: MutableState<Int> = mutableIntStateOf(3),
-    var count3B: MutableState<Int> = mutableIntStateOf(3),
     val whiteThemeBack: Color = Color(0xFFE6E6E6),
     val whiteThemeRow: Color = Color(0xFFB9B9B9),
     val whiteThemeEnabled: Color = Color(0xFF8C8C8C),
@@ -33,4 +27,13 @@ data class Theme(
     var themeBackNow: MutableState<Color> = mutableStateOf(whiteThemeBack),
     var themeRowNow: MutableState<Color> = mutableStateOf(whiteThemeRow),
     var themeEnabledNow: MutableState<Color> = mutableStateOf(whiteThemeEnabled)
+)
+
+data class StartCount(
+    var count1R: Int = 3,
+    var count2R: Int = 3,
+    var count3R: Int = 3,
+    var count1B: Int = 3,
+    var count2B: Int = 3,
+    var count3B: Int = 3
 )

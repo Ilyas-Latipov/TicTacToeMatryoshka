@@ -8,13 +8,14 @@ import ru.tictac.tictactoe_matryoshka.models.Pl1
 import ru.tictac.tictactoe_matryoshka.models.Pl2
 import ru.tictac.tictactoe_matryoshka.models.Players
 import ru.tictac.tictactoe_matryoshka.models.SetValue
+import ru.tictac.tictactoe_matryoshka.models.StartCount
 import ru.tictac.tictactoe_matryoshka.models.Theme
 
 
 fun clickPlayer1Button(
     button: Players,
     set: SetValue,
-    pl1buttons: List<Pl1>
+    pl1buttons: List<Pl1>,
 ) {
     when {
         button.id != set.oldBoardId -> {
@@ -64,7 +65,7 @@ fun clickPlayer2Button(
     }
 }
 
-fun clickPlayerButtonSet(
+private fun clickPlayerButtonSet(
     button: Players,
     set: SetValue,
 ) {
@@ -73,7 +74,7 @@ fun clickPlayerButtonSet(
     set.oldBoardId = button.id
 }
 
-fun clickPlayerButtonRetry(
+private fun clickPlayerButtonRetry(
     button: Players,
     set: SetValue,
 ) {
@@ -118,7 +119,7 @@ fun clickBoardButton(
     }
 }
 
-fun clickBoardButtonSet(
+private fun clickBoardButtonSet(
     button: BoardModel,
     set: SetValue,
     buttonsBoard: List<BoardModel>,
@@ -145,7 +146,7 @@ fun clickBoardButtonSet(
 }
 
 
-fun clickBoardButtonRearrange(
+private fun clickBoardButtonRearrange(
     button: BoardModel,
     set: SetValue,
     buttonsBoard: List<BoardModel>,
@@ -195,7 +196,7 @@ fun clickBoardButtonRearrange(
 }
 
 
-fun buttonsBoardEnabled(button: BoardModel, buttons: List<BoardModel>, theme: Theme) {
+private fun buttonsBoardEnabled(button: BoardModel, buttons: List<BoardModel>, theme: Theme) {
     buttons.forEach {
         if (button.id !in it.neighbors) {
             it.enabled.value = false
@@ -204,7 +205,7 @@ fun buttonsBoardEnabled(button: BoardModel, buttons: List<BoardModel>, theme: Th
     }
 }
 
-fun decryptor(id: String, button: BoardModel) {
+private fun decryptor(id: String, button: BoardModel) {
     when (id[0]) {
         '1' -> {
             button.sizeNow.value = 0.3f
@@ -230,7 +231,7 @@ fun decryptor(id: String, button: BoardModel) {
     }
 }
 
-fun whoWalk(whoWalk: Boolean, pl1buttons: List<Pl1>, pl2buttons: List<Pl2>) {
+private fun whoWalk(whoWalk: Boolean, pl1buttons: List<Pl1>, pl2buttons: List<Pl2>) {
     when {
         whoWalk -> {
             pl2buttons.forEach { it.enabled.value = false }
@@ -254,7 +255,7 @@ fun whoWalk(whoWalk: Boolean, pl1buttons: List<Pl1>, pl2buttons: List<Pl2>) {
     }
 }
 
-fun checkWin(board: List<BoardModel>, color: Color): Boolean {
+private fun checkWin(board: List<BoardModel>, color: Color): Boolean {
     val winCombinations = listOf(
         listOf(0, 1, 2), listOf(3, 4, 5), listOf(6, 7, 8),
         listOf(0, 3, 6), listOf(1, 4, 7), listOf(2, 5, 8),
@@ -266,7 +267,7 @@ fun checkWin(board: List<BoardModel>, color: Color): Boolean {
     }
 }
 
-fun checkWinners(board: List<BoardModel>): List<Color> {
+private fun checkWinners(board: List<BoardModel>): List<Color> {
     val winners = mutableListOf<Color>()
 
     if (checkWin(board, Color.Red)) {
@@ -279,7 +280,7 @@ fun checkWinners(board: List<BoardModel>): List<Color> {
     return winners
 }
 
-fun win(board: List<BoardModel>, state: MutableState<GameState>) {
+private fun win(board: List<BoardModel>, state: MutableState<GameState>) {
     val winners = checkWinners(board)
 
     if (winners.isNotEmpty()) {
@@ -293,7 +294,8 @@ fun restart(
     pl1buttons: List<Pl1>,
     pl2buttons: List<Pl2>,
     set: SetValue,
-    theme: Theme
+    theme: Theme,
+    startCount: StartCount
 ) {
     board.forEach { cell ->
         cell.lvl1 = ""
@@ -306,17 +308,17 @@ fun restart(
     }
     pl1buttons.forEach { button ->
         when (button.id[0]) {
-            '3' -> button.count.value = theme.count3R.value
-            '2' -> button.count.value = theme.count2R.value
-            '1' -> button.count.value = theme.count1R.value
+            '3' -> button.count.value = startCount.count3R
+            '2' -> button.count.value = startCount.count2R
+            '1' -> button.count.value = startCount.count1R
         }
         button.enabled.value = true
     }
     pl2buttons.forEach { button ->
         when (button.id[0]) {
-            '3' -> button.count.value = theme.count1B.value
-            '2' -> button.count.value = theme.count2B.value
-            '1' -> button.count.value = theme.count3B.value
+            '3' -> button.count.value = startCount.count1B
+            '2' -> button.count.value = startCount.count2B
+            '1' -> button.count.value = startCount.count3B
         }
         button.enabled.value = false
     }

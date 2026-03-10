@@ -2,6 +2,8 @@ package ru.tictac.tictactoe_matryoshka.logic
 
 import androidx.compose.ui.graphics.Color
 import ru.tictac.tictactoe_matryoshka.models.BoardModel
+import ru.tictac.tictactoe_matryoshka.models.Players
+import ru.tictac.tictactoe_matryoshka.models.StartCount
 import ru.tictac.tictactoe_matryoshka.models.Theme
 import kotlin.collections.forEach
 
@@ -28,25 +30,47 @@ fun applyTheme(
 }
 
 fun countEditor(
-    theme: Theme,
-    id: String
+    startCount: StartCount,
+    button: Players
 ) {
-    when (id) {
-        "3R" -> theme.count3R.value = counter(theme.count3R.value)
-        "2R" -> theme.count2R.value = counter(theme.count2R.value)
-        "1R" -> theme.count1R.value = counter(theme.count1R.value)
+    when (button.id) {
+        "3R" -> {
+            startCount.count3R = counter(startCount.count3R)
+            button.count.value = startCount.count3R
+        }
+
+        "2R" -> {
+            startCount.count2R = counter(startCount.count2R)
+            button.count.value = startCount.count2R
+        }
+
+        "1R" -> {
+            startCount.count1R = counter(startCount.count1R)
+            button.count.value = startCount.count1R
+        }
     }
-    when (id) {
-        "3B" -> theme.count3B.value = counter(theme.count3B.value)
-        "2B" -> theme.count2B.value = counter(theme.count2B.value)
-        "1B" -> theme.count1B.value = counter(theme.count1B.value)
+    when (button.id) {
+        "3B" -> {
+            startCount.count3B = counter(startCount.count3B)
+            button.count.value = startCount.count3B
+        }
+
+        "2B" -> {
+            startCount.count2B = counter(startCount.count2B)
+            button.count.value = startCount.count2B
+        }
+
+        "1B" -> {
+            startCount.count1B = counter(startCount.count1B)
+            button.count.value = startCount.count1B
+        }
     }
 }
 
-fun counter(count: Int): Int {
+private fun counter(count: Int): Int {
     if (count < 9) {
         return count + 1
-    } else {
-        return 0
     }
+    return 0
+
 }

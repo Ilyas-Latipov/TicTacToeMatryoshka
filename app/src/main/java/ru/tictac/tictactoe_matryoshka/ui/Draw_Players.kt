@@ -29,11 +29,19 @@ import ru.tictac.tictactoe_matryoshka.models.Pl1
 import ru.tictac.tictactoe_matryoshka.models.Pl2
 import ru.tictac.tictactoe_matryoshka.models.Theme
 import ru.tictac.tictactoe_matryoshka.logic.countEditor
+import ru.tictac.tictactoe_matryoshka.models.StartCount
 import ru.tictac.tictactoe_matryoshka.vibrate
 
 
 @Composable
-fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme, state: MutableState<GameState>) {
+fun Draw_Pl1(
+    item: Pl1,
+    set: SetValue,
+    pl1buttons: List<Pl1>,
+    theme: Theme,
+    startCount: StartCount,
+    state: MutableState<GameState>
+) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
@@ -56,8 +64,11 @@ fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme, stat
                         )
                     ) {
                         vibrate(context)
-                        if (state.value == GameState.Count) {countEditor(theme, item.id)}
-                        else{clickPlayer1Button(item, set, pl1buttons)}
+                        if (state.value == GameState.Count) {
+                            countEditor(startCount, item)
+                        } else {
+                            clickPlayer1Button(item, set, pl1buttons)
+                        }
                     }
                 } else {
                     Modifier
@@ -76,7 +87,14 @@ fun Draw_Pl1(item: Pl1, set: SetValue, pl1buttons: List<Pl1>, theme: Theme, stat
 
 
 @Composable
-fun Draw_Pl2(item: Pl2, set: SetValue, pl2buttons: List<Pl2>, theme: Theme, state: MutableState<GameState>) {
+fun Draw_Pl2(
+    item: Pl2,
+    set: SetValue,
+    pl2buttons: List<Pl2>,
+    theme: Theme,
+    startCount: StartCount,
+    state: MutableState<GameState>
+) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
@@ -99,8 +117,11 @@ fun Draw_Pl2(item: Pl2, set: SetValue, pl2buttons: List<Pl2>, theme: Theme, stat
                         )
                     ) {
                         vibrate(context)
-                        if (state.value == GameState.Count) {countEditor(theme, item.id)}
-                        else{clickPlayer2Button(item, set, pl2buttons)}
+                        if (state.value == GameState.Count) {
+                            countEditor(startCount, item)
+                        } else {
+                            clickPlayer2Button(item, set, pl2buttons)
+                        }
                     }
                 } else {
                     Modifier
