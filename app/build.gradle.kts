@@ -13,8 +13,8 @@ android {
         applicationId = "ru.tictac.tictactoe_matryoshka"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "3.0.1"
+        versionCode = 2
+        versionName = "3.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

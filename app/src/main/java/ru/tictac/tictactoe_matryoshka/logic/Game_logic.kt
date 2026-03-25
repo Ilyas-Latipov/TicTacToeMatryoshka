@@ -316,9 +316,9 @@ fun restart(
     }
     pl2buttons.forEach { button ->
         when (button.id[0]) {
-            '3' -> button.count.value = startCount.count1B
+            '3' -> button.count.value = startCount.count3B
             '2' -> button.count.value = startCount.count2B
-            '1' -> button.count.value = startCount.count3B
+            '1' -> button.count.value = startCount.count1B
         }
         button.enabled.value = false
     }
